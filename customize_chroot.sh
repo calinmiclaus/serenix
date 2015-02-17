@@ -69,15 +69,13 @@ export BUILD_SYSTEM="Ubuntu"
 # flavour string acquired at boot time, unless you set FLAVOUR to any
 # non-empty string.
 
-# export FLAVOUR="Ubuntu"
+export FLAVOUR="Ubuntu"
 EOF
 
-info "Installing utility tools"
+info "Installing some tools"
 apt-get -y install plymouth-x11 mc nano 
 
 # configure plymouth
-#FIXME: still taken into account ?
-
 info "Configuring plymouth"
 cat <<EOF >/lib/plymouth/themes/ubuntu-text/ubuntu-text.plymouth
 [Plymouth Theme]
@@ -93,13 +91,8 @@ brown=0x000000
 blue=0x988592
 EOF
 
-# e18 (from vase's repo, deprecated)
-#apt-get -y install enlightenment libasound2-plugins alsa-utils terminology ephoto econnman-bin
-
 # install e19 and all the apps from bodhi's repos
 #apt-get install bodhi-icons elaptopcheck esudo e19 eepdater matrilneare-icon-theme comp-scale desksanity-e19 deskshow-e19 eandora eccess econcentration econnman edbus edeb efbb efx elemines enjoy emotion-generic-players enventor epad ephoto epour equate eruler etext radiance-blue-theme-e19 radiance-blue-theme-gtk rage terminology valosoitin elementary efl python-efl
-
-# install e19
 
 info "Installing e19"
 apt-get --allow-unauthenticated -y install dh-python
@@ -115,18 +108,6 @@ apt-get -y install xserver-xorg
 # FIXME: remove this after stabilizing e19
 info "Installing xfce"
 apt-get --allow-unauthenticated -y install xfce4 xfwm4-themes xfce4-goodies xfce4-power-manager thunar-archive-plugin thunar gnome-icon-theme thunar xfce4-terminal gtk2-engines-pixbuf
-
-info "Customizations..."
-
-info "Setting E17gtk as default gtk theme"
-echo "include \"/usr/share/themes/E17gtk/gtk-2.0/gtkrc\"" >/etc/skel/.gtkrc-2.0
-
-#FIXME: find a way to start x (or a DM) automatically
-info "Adding enlightenment_start to xinitrc"
-echo "exec enlightenment_start" >/etc/skel/.xinitrc
-
-#info "Adding xfce to xinitrc"
-#echo "exec xfce4" >/etc/skel/.xinitrc
 
 rm /var/lib/dbus/machine-id
 dpkg-divert --rename --remove /sbin/initctl
