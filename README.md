@@ -31,6 +31,17 @@ cd serenix
 * make sure to run the build script as root (as it requires mount/chroot privileges), on a partition which supports setuid files (needed for the suid files in the chroot environment).
 * the builder won't erase the *chroot* directory automatically at the end. On invocation however, it will ask you if you want to delete it. If manual testing takes place in the chroot environment some processes might hook up /dev and its unmount will fail. In this case, the builder will complain and you will have to unmount *chroot/dev* and delete *chroot* manually . It is a security measure designed for your own protection :)
 
+## How to run the graphical interface on livecd
+* Install the newly created iso (vmware programs should be ok)
+* At the bash prompt, run `startx`. It will boot up an (unconfigured) version of e19
+* If you need xfce :
+
+```
+echo "startxfce4" >~/.xinitrc
+startx
+```
+
+
 ## Under the hood
 * based on Ubuntu 14.04 (could work for debian also)
 
