@@ -25,7 +25,7 @@ git clone https://github.com/calinmiclaus/serenix.git
 cd serenix
 ./build.sh
 ```
-* This will build a new iso (called `serenix-VERSION.iso`
+* This will build a new iso (called `serenix-VERSION.iso`)
 * must run on an *Ubuntu64 14.04 system
 * make sure to have at least 1.2GB free disk space
 * make sure to run the build script as root (as it requires mount/chroot privileges), on a partition which supports setuid files (needed for the suid files in the chroot environment).
