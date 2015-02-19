@@ -8,6 +8,9 @@ Also, an education-oriented version should be taken into consideration.
 ### What is here so far
 * a builder script which spits out an iso, the customization is relatively easy to do
 * livecd mode working
+* system can be installed on a hard drive
+* xfce session with some customizations
+* basic package selection (multimedia, browsing, anonymity)
 * bugs
 
 ### What is missing
@@ -25,21 +28,11 @@ git clone https://github.com/calinmiclaus/serenix.git
 cd serenix
 ./build.sh
 ```
-* This will build a new iso (called `serenix-VERSION.iso`)
-* must run on an *Ubuntu64 14.04 system
-* make sure to have at least 1.2GB free disk space
+* This will build a new iso (called `serenix-VERSION_amd64.iso`)
+* must run on an *ubuntu64 14.04 system
+* make sure to have at least 4GB free disk space
 * make sure to run the build script as root (as it requires mount/chroot privileges), on a partition which supports setuid files (needed for the suid files in the chroot environment).
 * the builder won't erase the *chroot* directory automatically at the end. On invocation however, it will ask you if you want to delete it. If manual testing takes place in the chroot environment some processes might hook up /dev and its unmount will fail. In this case, the builder will complain and you will have to unmount *chroot/dev* and delete *chroot* manually . It is a security measure designed for your own protection :)
-
-## How to run the graphical interface on livecd
-* Install the newly created iso (vmware programs should be ok)
-* At the bash prompt, run `startx`. It will boot up an (unconfigured) version of e19
-* If you need xfce :
-
-```
-echo "startxfce4" >~/.xinitrc
-startx
-```
 
 
 ## Under the hood
@@ -52,7 +45,7 @@ startx
     * copy /etc/hosts, /etc/resolv.conf (needed for apt-get)
 * copy artefacts to the newly created system
     * /etc/apt/sources.list (includes bodhi's repos)
-    * gtk themes (E17gtk)
+    * gtk theme (E17gtk)
     * skel files (.xinitrc, .gtkrc-2.0, .e, .elementary)
     * e19 themes
 * chroot into that system and run the configuration script (`customize_chroot.sh`)
@@ -65,6 +58,7 @@ startx
     * install e19
     * install xfce
     * install other tools (mc, ...)
+    * install multimedia packages (vlc, audacious, ...)
     * unmount /proc, /sys, /dev/pts
 * create an iso image
     * create an `image` directory where to store the iso content
