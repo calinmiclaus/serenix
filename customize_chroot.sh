@@ -43,7 +43,7 @@ apt-get -y install dbus dbus-x11
 dbus-uuidgen > /var/lib/dbus/machine-id
 dpkg-divert --local --rename --add /sbin/initctl
 
-#FIXME: here is grub-pc installed, which requires user intervention
+#NOTE: grub-pc is interactive, so we use the noninteractive flag
 info "Installing kernel"
 DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install linux-generic
 
@@ -60,7 +60,7 @@ cat <<EOF >/etc/casper.conf
 # Supported variables are:
 # USERNAME, USERFULLNAME, HOST, BUILD_SYSTEM, FLAVOUR
 
-export USERNAME="serenity"
+export USERNAME="serenix"
 export USERFULLNAME="Live session user"
 export HOST="serenix"
 export BUILD_SYSTEM="Ubuntu"
@@ -72,7 +72,7 @@ export BUILD_SYSTEM="Ubuntu"
 export FLAVOUR="Ubuntu"
 EOF
 
-info "Installing some tools"
+info "Installing console tools"
 apt-get -y install plymouth-x11 mc nano 
 
 # configure plymouth
@@ -91,29 +91,50 @@ brown=0x000000
 blue=0x988592
 EOF
 
+
+info "Installing xorg"
+apt-get -y install xserver-xorg
+
 # install e19 and all the apps from bodhi's repos
 #apt-get install bodhi-icons elaptopcheck esudo e19 eepdater matrilneare-icon-theme comp-scale desksanity-e19 deskshow-e19 eandora eccess econcentration econnman edbus edeb efbb efx elemines enjoy emotion-generic-players enventor epad ephoto epour equate eruler etext radiance-blue-theme-e19 radiance-blue-theme-gtk rage terminology valosoitin elementary efl python-efl
 
 info "Installing e19"
 apt-get --allow-unauthenticated -y install dh-python
-apt-get --allow-unauthenticated -y install bodhi-icons elaptopcheck esudo e19 eepdater matrilneare-icon-theme comp-scale desksanity-e19 deskshow-e19 econnman edbus edeb efx elemines radiance-blue-theme-e19 radiance-blue-theme-gtk terminology elementary efl python-efl
-
-# FIXME: unauthenticated repo?
-info "Installing ubiquity"
-DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated install ubiquity-frontend-gtk ubiquity-casper ubiquity
-
-info "Installing xorg"
-apt-get -y install xserver-xorg
+apt-get --allow-unauthenticated -y install bodhi-icons elaptopcheck esudo e19 eepdater matrilneare-icon-theme comp-scale desksanity-e19 deskshow-e19 edbus edeb efx elemines radiance-blue-theme-e19 radiance-blue-theme-gtk terminology elementary efl python-efl
 
 # FIXME: remove this after stabilizing e19
 info "Installing xfce"
 apt-get --allow-unauthenticated -y install xfce4 xfwm4-themes xfce4-goodies xfce4-power-manager thunar-archive-plugin thunar gnome-icon-theme thunar xfce4-terminal gtk2-engines-pixbuf
+
+# install some icon themes
+info "Installing icon themes"
+apt-get --allow-unauthenticated -y install faenza-icon-theme xubuntu-icon-theme
+
+# creating/updadeing icon caches
+find /usr/share/icons -maxdepth 1 -type d|grep -vx "/usr/share/icons"|while read icon;
+do
+    gtk-update-icon-cache $icon
+done
+
+# FIXME: unauthenticated repo?
+info "Installing ubiquity"
+DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated install ubiquity-frontend-gtk ubiquity ubiquity-frontend-gtk ubiquity-casper
+
+# FIXME: this is a dirty hack. Ubiquity fails if this file is present. Investigate further
+rm /usr/lib/ubiquity/apt-setup/generators/40cdrom
+
+info "Installing neccesary tools (chromium,...)"
+apt-get --allow-unauthenticated -y install chromium-browser audacious vlc tor encfs software-center
+
+# FIXME: shamelessly replacing "Bodhi" with "Serenix" in the desktop installer launcher
+sed -i s/"Bodhi Linux 3.0.0"/"Serenix $version"/g /usr/share/applications/ubiquity.desktop
 
 rm /var/lib/dbus/machine-id
 dpkg-divert --rename --remove /sbin/initctl
 
 info "Cleaning up"
 apt-get clean
+apt-get autoremove
 rm -rf /tmp/*
 
 info "Unmounting /proc, /sys, /dev/pts"

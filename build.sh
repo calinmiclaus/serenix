@@ -1,10 +1,13 @@
 #!/bin/bash
 
-version=`cat version`
-version=$(( $version + 1 ))
+
+bitness="amd64"
+buildversion=`cat version`
+buildversion=$(( $buildversion + 1 ))
+version="14.04-build${buildversion}"
 
 # installs the tools needed to build the iso 
-#apt-get install debootstrap syslinux squashfs-tools genisoimage
+apt-get install debootstrap syslinux squashfs-tools genisoimage
 
 function info()
 {
@@ -30,7 +33,7 @@ function warn()
     echo -e "===== ${YELLOW}$*${NO_COLOUR}"
 }
 
-# create the directory 'chroot', exit if it exists
+# create the directory 'chroot', exit if it exists. Make sure nothing is mounted in it
 [ ! -d chroot ] && mkdir -p chroot || \
 {
 warn "The 'chroot' directory already exists"
@@ -60,10 +63,10 @@ fi
 
 # install the base system in chroot
 info "Installing the base system in chroot"
-#debootstrap --arch=amd64 saucy chroot
+debootstrap --arch=${bitness} trusty chroot
 
 #FIXME: temporary
-cp -R chroot.clean/* chroot/
+#cp -R chroot.clean/* chroot/
 
 # mount device files in chroot/dev
 info "Mounting /dev in chroot"
@@ -89,6 +92,9 @@ chmod +x chroot/customize_chroot.sh
 
 # run the customization script in chroot. This will take a while, it will install all additional packages...
 chroot chroot /customize_chroot.sh $version
+
+# remove the script from chroot
+rm -f chroot/customize_chroot.sh
 
 # kill the processes still running in chroot which use devices in chroot/dev (dbus,cups,...). This is needed for unmounting the dev directory
 info "Killing hanged processes"
@@ -150,7 +156,11 @@ mksquashfs chroot image/casper/filesystem.squashfs
 
 # write the image size, its needed by the installer
 info "Finalizing iso"
-printf $(sudo du -sx --block-size=1 chroot | cut -f1) > image/casper/filesystem.size
+fssize=`printf $(du -sx --block-size=1 chroot | cut -f1)`
+
+# add 2.5gb extra space
+fssize=$(( $fssize + 500000000 ))
+echo $fssize > image/casper/filesystem.size
 
 # create diskdefines
 cat <<EOF >image/README.diskdefines
@@ -178,12 +188,12 @@ info "Calculate md5sums"
 cd image
 find . -type f -print0 | xargs -0 md5sum | grep -v "\./md5sum.txt" > md5sum.txt
 
-# build the iso
+# build the iso and increment version if successfull
 info "Build the iso"
-mkisofs -r -V "Serenix $version" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../serenix-${version}.iso . && echo $version >../version
+mkisofs -r -V "Serenix $version" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../serenix-${version}_${bitness}.iso . && echo $buildversion >../version
 cd ..
 
 info "Deleting image remains"
 rm -rf image
 
-info "Finish!"
+info "Finish building Serenix $version!"
