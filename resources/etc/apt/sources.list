@@ -1,3 +1,5 @@
+deb http://packages.bodhilinux.com/bodhi trusty main
+
 #deb cdrom:[Xubuntu 14.04 LTS _Trusty Tahr_ - Release amd64 (20140416.2)]/ trusty main multiverse restricted universe
 
 # See http://help.ubuntu.com/community/UpgradeNotes for how to upgrade to
@@ -55,4 +57,3 @@ deb-src http://security.ubuntu.com/ubuntu trusty-security multiverse
 deb http://extras.ubuntu.com/ubuntu trusty main
 deb-src http://extras.ubuntu.com/ubuntu trusty main
 
-deb http://packages.bodhilinux.com/bodhi trusty main
