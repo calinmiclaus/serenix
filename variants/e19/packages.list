@@ -1,0 +1,17 @@
+# you can put comments here as long as the comment line STARTS EXACTLY with a "#" char
+# empty lines will be ignored
+
+xserver-xorg
+thunar gtk2-engines-pixbuf
+
+# faenza comes from bodhi's repos
+faenza-icon-theme xubuntu-icon-theme
+
+# FIXME: add more packages
+#chromium-browser audacious vlc tor encfs software-center
+
+# long list
+bodhi-icons elaptopcheck esudo e19 eepdater matrilneare-icon-theme comp-scale desksanity-e19 deskshow-e19 eandora eccess econcentration econnman edbus edeb efbb efx elemines enjoy emotion-generic-players enventor epad ephoto epour equate eruler etext radiance-blue-theme-e19 radiance-blue-theme-gtk rage terminology valosoitin elementary efl python-efl
+
+# short list
+#bodhi-icons elaptopcheck esudo e19 eepdater matrilneare-icon-theme comp-scale desksanity-e19 deskshow-e19 edbus edeb efx elemines radiance-blue-theme-e19 radiance-blue-theme-gtk terminology elementary efl python-efl

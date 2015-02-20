@@ -1,0 +1,12 @@
+# you can put comments here as long as the comment line STARTS EXACTLY with a "#" char
+# empty lines will be ignored
+
+# basic selection
+#xfce4 xfwm4-themes xfce4-goodies xfce4-power-manager thunar-archive-plugin gnome-icon-theme thunar xfce4-terminal gtk2-engines-pixbuf
+
+xfce4 xfce4-appfinder xfce4-artwork xfce4-battery-plugin xfce4-cellmodem-plugin xfce4-clipman xfce4-clipman-plugin xfce4-cpufreq-plugin xfce4-cpugraph-plugin xfce4-datetime-plugin xfce4-dict xfce4-diskperf-plugin xfce4-eyes-plugin xfce4-fsguard-plugin xfce4-genmon-plugin xfce4-goodies xfce4-hdaps xfce4-indicator-plugin xfce4-linelight-plugin xfce4-mailwatch-plugin xfce4-messenger-plugin xfce4-mixer xfce4-mount-plugin xfce4-mpc-plugin xfce4-netload-plugin xfce4-notes xfce4-notes-plugin xfce4-notifyd xfce4-panel xfce4-places-plugin xfce4-power-manager xfce4-power-manager-data xfce4-power-manager-plugins xfce4-quicklauncher-plugin xfce4-radio-plugin xfce4-screenshooter xfce4-screenshooter-plugin xfce4-sensors-plugin xfce4-session xfce4-settings xfce4-smartbookmark-plugin xfce4-systemload-plugin xfce4-taskmanager xfce4-terminal xfce4-time-out-plugin xfce4-timer-plugin xfce4-verve-plugin xfce4-volumed xfce4-wavelan-plugin xfce4-weather-plugin xfce4-whiskermenu-plugin xfce4-wmdock-plugin xfce4-xkb-plugin
+
+xubuntu-icon-theme
+
+# FIXME: add more packages
+#chromium-browser audacious vlc tor encfs software-center

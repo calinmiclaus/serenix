@@ -1,37 +1,53 @@
 #!/bin/bash
-
-
-bitness="amd64"
-buildversion=`cat version`
-buildversion=$(( $buildversion + 1 ))
-version="14.04-build${buildversion}"
-
-# installs the tools needed to build the iso 
-apt-get install debootstrap syslinux squashfs-tools genisoimage
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+YELLOW="\033[0;33m"
+NO_COLOUR="\033[0m"
 
 function info()
 {
-    local GREEN="\033[0;32m"
-    local NO_COLOUR="\033[0m"
-
     echo -e "===== ${GREEN}$*${NO_COLOUR}"
 }
 
 function err()
 {
-    local RED="\033[0;31m"
-    local NO_COLOUR="\033[0m"
-
     echo -e "===== ${RED}$*${NO_COLOUR}"
 }
 
 function warn()
 {
-    local YELLOW="\033[0;33m"
-    local NO_COLOUR="\033[0m"
-
     echo -e "===== ${YELLOW}$*${NO_COLOUR}"
 }
+
+
+variant=$1
+
+# check if we have the first argument (variant)
+[ $# -ne 1 ] &&
+    {
+    err "No variant specified."
+    echo "Syntax:"
+    echo "`basename $0` <variant>"
+    echo
+    echo "Here is a list of available variants (taken from the 'variants' directory):"
+    echo -ne "$GREEN";ls variants/;echo -ne "$NO_COLOUR"
+    err "Exiting..."
+    exit 1
+    }
+
+[ ! -d variants/${variant} ] &&
+    {
+	err "Variant ${variant} is missing from the 'variants' directory. Exiting..."
+	exit 1
+    }
+
+bitness="amd64"
+buildversion=`cat variants/${variant}/build`
+buildversion=$(( $buildversion + 1 ))
+version="14.04-${variant}-build${buildversion}"
+
+# installs the tools needed to build the iso 
+apt-get -y install debootstrap syslinux squashfs-tools genisoimage
 
 # create the directory 'chroot', exit if it exists. Make sure nothing is mounted in it
 [ ! -d chroot ] && mkdir -p chroot || \
@@ -46,18 +62,10 @@ then
     err "There is something mounted in chroot. Handle it yourself. Exiting..."
     exit 1
 else
-    echo -n "There doesen't seem to be anything mounted inside 'chroot'. Do you want to remove it forcefully [y/n] ? "
-    read answer
-    [ "$answer" == "y" ] &&
-        {
-	    rm -rf chroot
-	    mkdir -p chroot
-	    info "Directory removed, an empty one created"
-	} ||
-	{
-	    echo "Exiting..."
-	    exit 1
-	}
+    info "There doesen't seem to be anything mounted inside 'chroot'. Removing it"
+    rm -rf chroot
+    mkdir -p chroot
+    info "Directory removed, an empty one created"
 fi
 }
 
@@ -74,27 +82,26 @@ mount -o bind /dev chroot/dev
 
 # copying sources.list and resolv.conf in chroot/etc
 info "Copying /etc/hosts, /etc/resolv.conf"
-mkdir chroot/etc
 cp /etc/hosts chroot/etc/hosts
 cp /etc/resolv.conf chroot/etc/resolv.conf
 
 info "Copying resources to chroot"
-cp -R resources/* chroot/
+cp -R variants/${variant}/resources/* chroot/
 
 
 # copying the customization script in chroot
 info "Running customize_chroot.sh"
 cp customize_chroot.sh chroot/
+cp variants/${variant}/variant.sh chroot/
+cp variants/${variant}/packages.list chroot/
 chmod +x chroot/customize_chroot.sh
-
-#err "acuma rulez customize_chroot, intra manual pe el"
-#read
+chmod +x chroot/variant.sh
 
 # run the customization script in chroot. This will take a while, it will install all additional packages...
 chroot chroot /customize_chroot.sh $version
 
-# remove the script from chroot
-rm -f chroot/customize_chroot.sh
+# remove the scripts from chroot
+rm -f chroot/customize_chroot.sh chroot/packages.list chroot/variant.sh
 
 # kill the processes still running in chroot which use devices in chroot/dev (dbus,cups,...). This is needed for unmounting the dev directory
 info "Killing hanged processes"
@@ -114,8 +121,12 @@ umount chroot/dev || \
 	err "Something went wrong, I cant unmount chroot/dev . Use 'lsof|grep chroot/dev' and kill the processes yourself."
 	err "Press ENTER when done and MAKE SURE nobody uses chroot/dev any more !"
 	read
-	unmount chroot/dev
-}
+	unmount chroot/dev || \
+	    {
+	    err "Can't unmount chroot/dev. Investigate manually. Exiting..."
+	    exit 1
+	    }
+    }
 
 info "Preparing the livecd image"
 mkdir -p image/{casper,isolinux,install}
@@ -127,7 +138,30 @@ cp chroot/boot/initrd.img-*-generic image/casper/initrd.lz
 cp /boot/memtest86+.bin image/install/memtest
 
 cp /usr/lib/syslinux/isolinux.bin image/isolinux/
-cp isolinux.cfg image/isolinux/
+
+cat <<EOF >image/isolinux/isolinux.cfg
+DEFAULT live
+LABEL live
+  menu label ^Start or install Serenix
+  kernel /casper/vmlinuz
+  append  file=/cdrom/preseed/ubuntu.seed boot=casper initrd=/casper/initrd.lz quiet splash --
+LABEL check
+  menu label ^Check CD for defects
+  kernel /casper/vmlinuz
+  append  boot=casper integrity-check initrd=/casper/initrd.lz quiet splash --
+LABEL memtest
+  menu label ^Memory test
+  kernel /install/memtest
+  append -
+LABEL hd
+  menu label ^Boot from first hard disk
+  localboot 0x80
+  append -
+DISPLAY isolinux.txt
+TIMEOUT 200
+PROMPT 0
+EOF
+
 cat <<EOF >image/isolinux/isolinux.txt
 ************************************************************************
 
@@ -190,7 +224,7 @@ find . -type f -print0 | xargs -0 md5sum | grep -v "\./md5sum.txt" > md5sum.txt
 
 # build the iso and increment version if successfull
 info "Build the iso"
-mkisofs -r -V "Serenix $version" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../serenix-${version}_${bitness}.iso . && echo $buildversion >../version
+mkisofs -r -V "Serenix $version" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../serenix-${version}_${bitness}.iso . && echo $buildversion >../variants/${variant}/build
 cd ..
 
 info "Deleting image remains"
