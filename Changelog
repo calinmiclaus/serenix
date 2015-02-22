@@ -1,3 +1,11 @@
+mate(1-3):
+- added mate ppa
+
+*:
+- added desktop-base, gtk2-engines-pixbuf to all themes. Fixes gtk theme
+- build version file gets created if missing
+- properly included E17gtk in .gtkrc-2.0, install gtk2-engine-pixbuf for all variants
+- cleanup in packages.list
 
 e17(1-2), gnomeshell(1), xfce(24), e19(0):
 - added xterm, eterm, xinit to the common packages list

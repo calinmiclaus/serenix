@@ -1,0 +1,16 @@
+# you can put comments here as long as the comment line STARTS EXACTLY with a "#" char
+# empty lines will be ignored
+
+# needed by (some) gtk2 themes
+desktop-base gtk2-engines-pixbuf
+
+mate-desktop mate-backgrounds mate-desktop-common mate-icon-theme mate-notification-daemon mate-polkit mate-themes mate-common
+
+xubuntu-icon-theme
+
+ubiquity-slideshow-ubuntu-gnome
+
+software-center
+
+# FIXME: add more packages
+#chromium-browser audacious vlc tor encfs

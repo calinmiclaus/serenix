@@ -46,6 +46,7 @@ variant=$1
 
 bitness="amd64"
 buildversion=`cat variants/${variant}/build`
+[ -z "${buildversion}" ] && buildversion=0
 buildversion=$(( $buildversion + 1 ))
 version="14.04-${variant}-build${buildversion}"
 
@@ -124,7 +125,7 @@ umount chroot/dev || \
 	err "Something went wrong, I cant unmount chroot/dev . Use 'lsof|grep chroot/dev' and kill the processes yourself."
 	err "Press ENTER when done and MAKE SURE nobody uses chroot/dev any more !"
 	read
-	unmount chroot/dev || \
+	umount chroot/dev || \
 	    {
 	    err "Can't unmount chroot/dev. Investigate manually. Exiting..."
 	    exit 1

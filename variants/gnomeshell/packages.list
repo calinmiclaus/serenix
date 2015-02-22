@@ -1,6 +1,9 @@
 # you can put comments here as long as the comment line STARTS EXACTLY with a "#" char
 # empty lines will be ignored
 
+# needed by (some) gtk2 themes
+desktop-base gtk2-engines-pixbuf
+
 gnome-shell gnome-shell-extensions gnome-tweak-tool
 
 xubuntu-icon-theme

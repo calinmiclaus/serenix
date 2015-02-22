@@ -6,31 +6,30 @@ I would like an ubuntu/debian distro with enlightenment as window manager. It sh
 Also, an education-oriented variant whould be nice to have.
 
 ### What is here so far
-* a builder script which spits out an iso, the customization for each variant is relatively easy to do
-* livecd mode working
-* system can be installed on a hard drive
-* builtin support for multiple variants (xfce, e17, e19, gnome-shell for now)
-* xfce session is the most "mature"
+* a builder script which spits out an iso
+* livecd mode
+* system is installable using ubuntu's ubiquity installer
+* templates for multiple variants (e17, e19, mate, xfce, gnome-shell)
 * bugs
 
 ### What is missing
 * a more mature builder
-* a properly configured installer for the livecd (ubiquity)
-* customizations
-* proper package selection
+* variant customizations
 * documentation
 
 ### Status of variants
+* mate
+    * lacks proper package selection
+    * template is still broken
+
 * xfce
-    * most mature
     * some panel customizations
-    * E17gtk gtk theme
     * lacks proper package selection
 
 * e17
     * uses packages from ubuntu repos
     * some panel customizations
-    * E17gtk gtk theme
+    * mathing E17gtk theme
     * lacks proper package selection
 
 * gnome-shell
@@ -40,7 +39,7 @@ Also, an education-oriented variant whould be nice to have.
 * e19
     * uses packages from bodhi's repos
     * ubiquity behaves strangely (bodhi's customizations ?)
-    * E17gtk gtk theme
+    * mathing E17gtk theme
     * lacks proper package selection
     * considered pre-alpha
 
