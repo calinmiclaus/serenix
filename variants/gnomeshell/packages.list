@@ -1,0 +1,13 @@
+# you can put comments here as long as the comment line STARTS EXACTLY with a "#" char
+# empty lines will be ignored
+
+gnome-shell gnome-shell-extensions gnome-tweak-tool
+
+xubuntu-icon-theme
+
+ubiquity-slideshow-ubuntu-gnome
+
+software-center
+
+# FIXME: add more packages
+#chromium-browser audacious vlc tor encfs

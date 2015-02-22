@@ -91,7 +91,7 @@ info "Installing console tools"
 apt-get -y install plymouth-x11 mc nano 
 
 info "Installing xorg"
-apt-get -y install xserver-xorg
+apt-get -y install xserver-xorg xinit xterm
 
 # FIXME: unauthenticated repo?
 info "Installing ubiquity"
@@ -109,7 +109,8 @@ sed -i s/"Bodhi Linux 3.0.0"/"Serenix $version"/g /usr/share/applications/ubiqui
 info "Installing variant specific packages"
 cat /packages.list|grep -v ^\# | while read packages;
 do
-    [ ! -z "$packages" ] &&
+    # make sure $packages is not an empty line (or contains just spaces)
+    [ ! -z "`echo $packages`" ] &&
 	{
 	    info "Installing $packages (output stripped)"
 	    # FIXME: if I don't redirect the output, the while loop gets screwed (because of "read packages" I guess).

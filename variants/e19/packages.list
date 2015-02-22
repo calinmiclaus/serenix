@@ -7,6 +7,8 @@ thunar gtk2-engines-pixbuf
 # faenza comes from bodhi's repos
 faenza-icon-theme xubuntu-icon-theme
 
+ubiquity-slideshow-ubuntu
+
 # FIXME: add more packages
 #chromium-browser audacious vlc tor encfs software-center
 

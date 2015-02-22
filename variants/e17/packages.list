@@ -1,0 +1,13 @@
+# you can put comments here as long as the comment line STARTS EXACTLY with a "#" char
+# empty lines will be ignored
+
+e17 e17-data
+eterm
+xubuntu-icon-theme
+
+thunar
+
+ubiquity-slideshow-ubuntu
+
+# FIXME: add more packages
+chromium-browser software-center

@@ -8,5 +8,7 @@ xfce4 xfce4-appfinder xfce4-artwork xfce4-battery-plugin xfce4-cellmodem-plugin 
 
 xubuntu-icon-theme
 
+ubiquity-slideshow-xubuntu
+
 # FIXME: add more packages
 #chromium-browser audacious vlc tor encfs software-center

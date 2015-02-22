@@ -1,2 +1,1 @@
-#exec enlightenment_start
 exec startxfce4

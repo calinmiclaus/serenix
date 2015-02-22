@@ -38,6 +38,9 @@ variant=$1
 [ ! -d variants/${variant} ] &&
     {
 	err "Variant ${variant} is missing from the 'variants' directory. Exiting..."
+        echo
+        echo "Here is a list of available variants (taken from the 'variants' directory):"
+        echo -ne "$GREEN";ls variants/;echo -ne "$NO_COLOUR"
 	exit 1
     }
 
