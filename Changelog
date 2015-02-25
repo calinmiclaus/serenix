@@ -1,3 +1,14 @@
+*:
+- added some logging
+- small bugfixes
+
+xfce(24-26):
+- desktop packages for xfce variant and resources cleanup
+- replaced US ubuntu repositories with RO ones
+
+e17(3):
+- added wallpaper & icon fix plus some shortcuts in ibar
+
 mate(1-3):
 - added mate ppa
 

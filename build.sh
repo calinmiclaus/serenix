@@ -4,19 +4,23 @@ RED="\033[0;31m"
 YELLOW="\033[0;33m"
 NO_COLOUR="\033[0m"
 
+
 function info()
 {
     echo -e "===== ${GREEN}$*${NO_COLOUR}"
+    echo "===== $*" >>$logfile
 }
 
 function err()
 {
     echo -e "===== ${RED}$*${NO_COLOUR}"
+    echo "===== $*" >>$logfile
 }
 
 function warn()
 {
     echo -e "===== ${YELLOW}$*${NO_COLOUR}"
+    echo "===== $*" >>$logfile
 }
 
 
@@ -50,8 +54,10 @@ buildversion=`cat variants/${variant}/build`
 buildversion=$(( $buildversion + 1 ))
 version="14.04-${variant}-build${buildversion}"
 
+logfile="serenix-${version}.log"
+
 # installs the tools needed to build the iso 
-apt-get -y install debootstrap syslinux squashfs-tools genisoimage
+apt-get -y install debootstrap syslinux squashfs-tools genisoimage >>$logfile
 
 # create the directory 'chroot', exit if it exists. Make sure nothing is mounted in it
 [ ! -d chroot ] && mkdir -p chroot || \
@@ -75,7 +81,7 @@ fi
 
 # install the base system in chroot
 info "Installing the base system in chroot"
-debootstrap --arch=${bitness} trusty chroot
+debootstrap --arch=${bitness} trusty chroot >>$logfile
 
 #FIXME: temporary
 #cp -R chroot.clean/* chroot/

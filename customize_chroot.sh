@@ -1,11 +1,14 @@
 #!/bin/bash
 
+logoutput="/serenix_output.log"
+
 function info()
 {
     local GREEN="\033[0;32m"
     local NO_COLOUR="\033[0m"
 
     echo -e "==-== ${GREEN}$*${NO_COLOUR}"
+    echo -e "==-== $*" >>$logoutput
 }
 
 function err()
@@ -14,6 +17,7 @@ function err()
     local NO_COLOUR="\033[0m"
 
     echo -e "==-== ${RED}$*${NO_COLOUR}"
+    echo -e "==-== $*" >>$logoutput
 }
 
 
@@ -34,23 +38,23 @@ version=$1
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 16126D3A3E5C1192
 
 info "Updating system"
-apt-get -y update
+apt-get -y update >>$logoutput
 
 info "Installing dbus"
-apt-get -y install dbus dbus-x11
+apt-get -y install dbus dbus-x11 >>$logoutput
 
 dbus-uuidgen > /var/lib/dbus/machine-id
 dpkg-divert --local --rename --add /sbin/initctl
 
 #NOTE: grub-pc is interactive, so we use the noninteractive flag
 info "Installing kernel"
-DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install linux-generic
+DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install linux-generic linux-headers-generic >>$logoutput
 
 info "Installing memtest86+"
-apt-get -y install memtest86+
+apt-get -y install memtest86+ >>$logoutput
 
 info "Installing casper, ubuntu-standard, os-prober"
-apt-get -y --allow-unauthenticated install ubuntu-standard casper lupin-casper discover laptop-detect os-prober
+apt-get -y --allow-unauthenticated install ubuntu-standard casper lupin-casper discover laptop-detect os-prober >>$logoutput
 
 # configure casper
 info "Configuring casper"
@@ -62,13 +66,13 @@ cat <<EOF >/etc/casper.conf
 export USERNAME="serenix"
 export USERFULLNAME="Live session user"
 export HOST="serenix"
-export BUILD_SYSTEM="Ubuntu1"
+export BUILD_SYSTEM="Ubuntu"
 
 # USERNAME and HOSTNAME as specified above won't be honoured and will be set to
 # flavour string acquired at boot time, unless you set FLAVOUR to any
 # non-empty string.
 
-export FLAVOUR="Ubuntu2"
+export FLAVOUR="Ubuntu"
 EOF
 
 # configure plymouth
@@ -88,21 +92,17 @@ blue=0x988592
 EOF
 
 info "Installing console tools"
-apt-get -y install plymouth-x11 mc nano 
+apt-get -y install plymouth-x11 mc nano >>$logoutput
 
 info "Installing xorg"
-apt-get -y install xserver-xorg xinit xterm
+apt-get -y install xserver-xorg xinit xterm >>$logoutput
 
 # FIXME: unauthenticated repo?
 info "Installing ubiquity"
-DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated install ubiquity-frontend-gtk ubiquity ubiquity-frontend-gtk ubiquity-casper
+DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated install ubiquity-frontend-gtk ubiquity ubiquity-frontend-gtk ubiquity-casper >>$logoutput
 
 # FIXME: this is a dirty hack. Ubiquity fails if this file is present. Investigate further
 rm /usr/lib/ubiquity/apt-setup/generators/40cdrom
-
-# FIXME: shamelessly replacing "Bodhi" with "Serenix" in the desktop installer launcher
-sed -i s/"Bodhi Linux 3.0.0"/"Serenix $version"/g /usr/share/applications/ubiquity.desktop
-
 
 # START variant specific stuff
 
@@ -114,7 +114,7 @@ do
 	{
 	    info "Installing $packages (output stripped)"
 	    # FIXME: if I don't redirect the output, the while loop gets screwed (because of "read packages" I guess).
-	    DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated install $packages >/dev/null
+	    DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated install $packages >>$logoutput
         }
 done
 
@@ -127,8 +127,9 @@ rm /var/lib/dbus/machine-id
 dpkg-divert --rename --remove /sbin/initctl
 
 info "Cleaning up"
-apt-get clean
-apt-get autoremove
+apt-get -y -f install
+apt-get -y clean
+apt-get -y autoremove
 rm -rf /tmp/*
 
 info "Unmounting /proc, /sys, /dev/pts"
