@@ -1,0 +1,33 @@
+- generate /home/serenix/ubiquity.desktop and an icon
+- ubiquity says "preparing to install Ubuntu"
+- add artwork (images/descriptions) in ubiquity
+- add lightdm (or another DM)
+- compile e19 from source and generate debs
+- fix e19 configuration (it isnt taken into account now)
+- fix icons in variant/resources/etc/skel !
+- mate build might crash because of rsyslogd which keeps /dev busy
+- make "output stripped" ($YELLOW)
+- installing kernel -> kernel, grub, ...
+- packages names in '\e[1;33m' (bold yellow)
+- add time to logging messages
+- evince, zip, gvfs
+- ubiquity should default the language to romanian
+- the "install" desktop icon reads "Install ubuntu remix"
+- look for graphical plymouth theme
+- tee output log, take care of stderr (tee only stderr?)
+- make function to install packages, handle logging from there
+- handle resource installation from variant.sh (its running after package installation)
+- make a COMMON directory for resources. put sources.list, E17gtk,... there
+- add "Starting build of $version" to build.sh
+
+# customize_chroot.sh todo
+- redirect output of gpg key importing
+- redirect output of kernel installation (stderr?)
+- redirect output of dbus stuff
+- romanian documentation !!
+- redirect output of casper installation
+- apparmor profiles missing
+
+# build.sh todo
+- add command line options (verbose (see tee), unmount chroot/dev) 
+- redirect output of mkisofs aand the step before "Finalizing iso"
