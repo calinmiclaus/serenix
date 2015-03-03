@@ -1,26 +1,39 @@
 #!/bin/bash
-GREEN="\033[0;32m"
-RED="\033[0;31m"
-YELLOW="\033[0;33m"
-NO_COLOUR="\033[0m"
+
+txtred='\e[0;31m' # Red
+txtgrn='\e[0;32m' # Green
+txtylw='\e[0;33m' # Yellow
+txtblu='\e[0;34m' # Blue
+txtpur='\e[0;35m' # Purple
+txtcyn='\e[0;36m' # Cyan
+txtwht='\e[0;37m' # White
+bldblk='\e[1;30m' # Black - Bold
+bldred='\e[1;31m' # Red
+bldgrn='\e[1;32m' # Green
+bldylw='\e[1;33m' # Yellow
+bldblu='\e[1;34m' # Blue
+bldpur='\e[1;35m' # Purple
+bldcyn='\e[1;36m' # Cyan
+bldwht='\e[1;37m' # White
+txtrst='\e[0m'    # Text Reset
 
 
 function info()
 {
-    echo -e "===== ${GREEN}$*${NO_COLOUR}"
-    echo "===== $*" >>$logfile
+    echo -e "===== `date +%D-%T` ${bldgrn}$*${txtrst}"
+    echo "===== `date +%D-%T` $*" >>$logfile
 }
 
 function err()
 {
-    echo -e "===== ${RED}$*${NO_COLOUR}"
-    echo "===== $*" >>$logfile
+    echo -e "===== `date +%D-%T` ${bldred}$*${txtrst}"
+    echo "===== `date +%D-%T` $*" >>$logfile
 }
 
 function warn()
 {
-    echo -e "===== ${YELLOW}$*${NO_COLOUR}"
-    echo "===== $*" >>$logfile
+    echo -e "===== `date +%D-%T` ${bldylw}$*${txtrst}"
+    echo "===== `date +%D-%T` $*" >>$logfile
 }
 
 
@@ -34,7 +47,7 @@ variant=$1
     echo "`basename $0` <variant>"
     echo
     echo "Here is a list of available variants (taken from the 'variants' directory):"
-    echo -ne "$GREEN";ls variants/;echo -ne "$NO_COLOUR"
+    echo -ne "${bldgrn}";ls variants/;echo -ne "${txtrst}"
     err "Exiting..."
     exit 1
     }
@@ -44,7 +57,7 @@ variant=$1
 	err "Variant ${variant} is missing from the 'variants' directory. Exiting..."
         echo
         echo "Here is a list of available variants (taken from the 'variants' directory):"
-        echo -ne "$GREEN";ls variants/;echo -ne "$NO_COLOUR"
+        echo -ne "${bldgrn}";ls variants/;echo -ne "${txtrst}"
 	exit 1
     }
 
@@ -95,6 +108,7 @@ info "Copying /etc/hosts, /etc/resolv.conf"
 cp /etc/hosts chroot/etc/hosts
 cp /etc/resolv.conf chroot/etc/resolv.conf
 
+# we do this for /etc/apt/sources.list
 info "Copying resources to chroot"
 cp -R variants/${variant}/resources/* chroot/
 
@@ -109,6 +123,10 @@ chmod +x chroot/variant.sh
 
 # run the customization script in chroot. This will take a while, it will install all additional packages...
 chroot chroot /customize_chroot.sh $version
+
+# we do this for files overwritten by vanilla packages (is this neccesary ?)
+info "Copying resources to chroot"
+cp -Rf variants/${variant}/resources/* chroot/
 
 # remove the scripts from chroot
 rm -f chroot/customize_chroot.sh chroot/packages.list chroot/variant.sh

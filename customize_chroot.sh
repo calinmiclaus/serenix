@@ -2,13 +2,31 @@
 
 logoutput="/serenix_output.log"
 
+txtred='\e[0;31m' # Red
+txtgrn='\e[0;32m' # Green
+txtylw='\e[0;33m' # Yellow
+txtblu='\e[0;34m' # Blue
+txtpur='\e[0;35m' # Purple
+txtcyn='\e[0;36m' # Cyan
+txtwht='\e[0;37m' # White
+bldblk='\e[1;30m' # Black - Bold
+bldred='\e[1;31m' # Red
+bldgrn='\e[1;32m' # Green
+bldylw='\e[1;33m' # Yellow
+bldblu='\e[1;34m' # Blue
+bldpur='\e[1;35m' # Purple
+bldcyn='\e[1;36m' # Cyan
+bldwht='\e[1;37m' # White
+txtrst='\e[0m'    # Text Reset
+
+
 function info()
 {
     local GREEN="\033[0;32m"
     local NO_COLOUR="\033[0m"
 
-    echo -e "==-== ${GREEN}$*${NO_COLOUR}"
-    echo -e "==-== $*" >>$logoutput
+    echo -e "==-== `date +%D-%T` ${bldgrn}$*${txtrst}"
+    echo -e "==-== `date +%D-%T` $*" >>$logoutput
 }
 
 function err()
@@ -16,8 +34,8 @@ function err()
     local RED="\033[0;31m"
     local NO_COLOUR="\033[0m"
 
-    echo -e "==-== ${RED}$*${NO_COLOUR}"
-    echo -e "==-== $*" >>$logoutput
+    echo -e "==-== `date +%D-%T` ${bldred}$*${txtrst}"
+    echo -e "==-== `date +%D-%T` $*" >>$logoutput
 }
 
 
@@ -101,6 +119,9 @@ apt-get -y install xserver-xorg xinit xterm >>$logoutput
 info "Installing ubiquity"
 DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated install ubiquity-frontend-gtk ubiquity ubiquity-frontend-gtk ubiquity-casper >>$logoutput
 
+info "Installing desktop-base, gtk-engines"
+apt-get -y install desktop-base gtk2-engines-pixbuf gtk2-engines >>$logoutput
+
 # FIXME: this is a dirty hack. Ubiquity fails if this file is present. Investigate further
 rm /usr/lib/ubiquity/apt-setup/generators/40cdrom
 
@@ -115,6 +136,9 @@ do
 	    info "Installing $packages (output stripped)"
 	    # FIXME: if I don't redirect the output, the while loop gets screwed (because of "read packages" I guess).
 	    DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --allow-unauthenticated install $packages >>$logoutput
+
+	    # time consuming but might be usefull, some failed packages might need this
+	    apt-get -y -f install >>$logoutput
         }
 done
 
