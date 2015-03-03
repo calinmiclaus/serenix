@@ -1,4 +1,13 @@
 *:
+- resources get copied before&after the chroot script completes (quick fix until COMMON directory and resource hadndling from variant.sh)
+- changed colors in build.sh & customize_chroot.sh
+
+lxde(1-3):
+- added lxde variant
+- added lxdm customization (/etc/lxdm/lxdm.conf , /etc/xdg/lxsession/*)
+
+
+*:
 - added some logging
 - small bugfixes
 
