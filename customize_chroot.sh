@@ -52,6 +52,9 @@ export LC_ALL=C
 # gets the version of the build as the first argument
 version=$1
 
+info "Copying resources to system"
+cp -Rf resources/* /
+
 # ubuntu extras
 info "Adding ubuntu-extras gpg key"
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 16126D3A3E5C1192 >>$logoutput
@@ -156,6 +159,10 @@ apt-get -y -f install >>$logoutput
 apt-get -y clean >>$logoutput
 apt-get -y autoremove >>$logoutput
 rm -rf /tmp/*
+
+info "Copying resources to system (again)"
+cp -Rf resources/* /
+rm -rf resources
 
 info "Unmounting /proc, /sys, /dev/pts"
 umount -lf /proc

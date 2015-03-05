@@ -110,8 +110,8 @@ cp /etc/resolv.conf chroot/etc/resolv.conf
 
 # we do this for /etc/apt/sources.list
 info "Copying resources to chroot"
-cp -R variants/${variant}/resources/* chroot/
-
+mkdir chroot/resources
+cp -R variants/${variant}/resources/* chroot/resources
 
 # copying the customization script in chroot
 info "Running customize_chroot.sh"
@@ -123,10 +123,6 @@ chmod +x chroot/variant.sh
 
 # run the customization script in chroot. This will take a while, it will install all additional packages...
 chroot chroot /customize_chroot.sh $version
-
-# we do this for files overwritten by vanilla packages (is this neccesary ?)
-info "Copying resources to chroot"
-cp -Rf variants/${variant}/resources/* chroot/
 
 # remove the scripts from chroot
 rm -f chroot/customize_chroot.sh chroot/packages.list chroot/variant.sh
