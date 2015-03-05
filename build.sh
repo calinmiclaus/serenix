@@ -103,14 +103,12 @@ debootstrap --arch=${bitness} trusty chroot >>$logoutput
 info "Mounting /dev in chroot"
 mount -o bind /dev chroot/dev
 
-# copying sources.list and resolv.conf in chroot/etc
-info "Copying /etc/hosts, /etc/resolv.conf"
-cp /etc/hosts chroot/etc/hosts
-cp /etc/resolv.conf chroot/etc/resolv.conf
-
-# we do this for /etc/apt/sources.list
-info "Copying resources to chroot"
+# copy common resources BEFORE variant speciffic ones. Variant resources might need to overwrite common ones
+info "Copying common resources to chroot"
 mkdir chroot/resources
+cp -R variants/COMMON/* chroot/resources
+
+info "Copying variant resources to chroot"
 cp -R variants/${variant}/resources/* chroot/resources
 
 # copying the customization script in chroot
