@@ -21,19 +21,19 @@ txtrst='\e[0m'    # Text Reset
 function info()
 {
     echo -e "===== `date +%D-%T` ${bldgrn}$*${txtrst}"
-    echo "===== `date +%D-%T` $*" >>$logfile
+    echo "===== `date +%D-%T` $*" >>$logoutput
 }
 
 function err()
 {
     echo -e "===== `date +%D-%T` ${bldred}$*${txtrst}"
-    echo "===== `date +%D-%T` $*" >>$logfile
+    echo "===== `date +%D-%T` $*" >>$logoutput
 }
 
 function warn()
 {
     echo -e "===== `date +%D-%T` ${bldylw}$*${txtrst}"
-    echo "===== `date +%D-%T` $*" >>$logfile
+    echo "===== `date +%D-%T` $*" >>$logoutput
 }
 
 
@@ -67,10 +67,10 @@ buildversion=`cat variants/${variant}/build`
 buildversion=$(( $buildversion + 1 ))
 version="14.04-${variant}-build${buildversion}"
 
-logfile="serenix-${version}.log"
+logoutput="serenix-${version}.log"
 
 # installs the tools needed to build the iso 
-apt-get -y install debootstrap syslinux squashfs-tools genisoimage >>$logfile
+apt-get -y install debootstrap syslinux squashfs-tools genisoimage >>$logoutput
 
 # create the directory 'chroot', exit if it exists. Make sure nothing is mounted in it
 [ ! -d chroot ] && mkdir -p chroot || \
@@ -94,7 +94,7 @@ fi
 
 # install the base system in chroot
 info "Installing the base system in chroot"
-debootstrap --arch=${bitness} trusty chroot >>$logfile
+debootstrap --arch=${bitness} trusty chroot >>$logoutput
 
 #FIXME: temporary
 #cp -R chroot.clean/* chroot/
@@ -202,7 +202,7 @@ EOF
 
 # create manifest
 info "Create casper manifest"
-chroot chroot dpkg-query -W --showformat='${Package} ${Version}\n' | tee image/casper/filesystem.manifest
+chroot chroot dpkg-query -W --showformat='${Package} ${Version}\n' > image/casper/filesystem.manifest
 cp -v image/casper/filesystem.manifest image/casper/filesystem.manifest-desktop
 
 # FIXME: add ubiquity and other unnecessary packages
@@ -214,7 +214,7 @@ done
 
 # compress the chroot environment
 info "Compress the chroot environment"
-mksquashfs chroot image/casper/filesystem.squashfs
+mksquashfs chroot image/casper/filesystem.squashfs >>$logoutput
 
 # write the image size, its needed by the installer
 info "Finalizing iso"
@@ -252,7 +252,7 @@ find . -type f -print0 | xargs -0 md5sum | grep -v "\./md5sum.txt" > md5sum.txt
 
 # build the iso and increment version if successfull
 info "Build the iso"
-mkisofs -r -V "Serenix $version" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../serenix-${version}_${bitness}.iso . && echo $buildversion >../variants/${variant}/build
+mkisofs -r -V "Serenix $version" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../serenix-${version}_${bitness}.iso . >> $logoutput && echo $buildversion >../variants/${variant}/build
 cd ..
 
 info "Deleting image remains"

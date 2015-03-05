@@ -53,7 +53,8 @@ export LC_ALL=C
 version=$1
 
 # ubuntu extras
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 16126D3A3E5C1192
+info "Adding ubuntu-extras gpg key"
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 16126D3A3E5C1192 >>$logoutput
 
 info "Updating system"
 apt-get -y update >>$logoutput
@@ -62,7 +63,7 @@ info "Installing dbus"
 apt-get -y install dbus dbus-x11 >>$logoutput
 
 dbus-uuidgen > /var/lib/dbus/machine-id
-dpkg-divert --local --rename --add /sbin/initctl
+dpkg-divert --local --rename --add /sbin/initctl >>$logoutput
 
 #NOTE: grub-pc is interactive, so we use the noninteractive flag
 info "Installing kernel"
@@ -151,13 +152,15 @@ rm /var/lib/dbus/machine-id
 dpkg-divert --rename --remove /sbin/initctl
 
 info "Cleaning up"
-apt-get -y -f install
-apt-get -y clean
-apt-get -y autoremove
+apt-get -y -f install >>$logoutput
+apt-get -y clean >>$logoutput
+apt-get -y autoremove >>$logoutput
 rm -rf /tmp/*
 
 info "Unmounting /proc, /sys, /dev/pts"
 umount -lf /proc
 umount -lf /sys
 umount -lf /dev/pts
+
+info "Exiting from customize_chroot"
 exit
